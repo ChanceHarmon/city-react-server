@@ -8,10 +8,12 @@ const superagent = require('superagent')
 
 const PORT = process.env.PORT;
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
 
 app.use(cors());
 
 app.get('/weather', handleWeather);
+app.get('/movies', handleMovies)
 
 function handleWeather(request, response) {
   const { lat, lon } = request.query;
@@ -29,7 +31,6 @@ function handleWeather(request, response) {
       console.log(err)
       response.status(500).send(err.message)
     })
-
 }
 
 function Weather(obj) {
@@ -37,7 +38,33 @@ function Weather(obj) {
   this.date = obj.datetime;
 }
 
+function handleMovies(request, response) {
+  const userQuery = request.query.city;
+  const url = `https://api.themoviedb.org/3/search/movie?query=${userQuery}&api_key=${MOVIE_API_KEY}`
 
+  superagent.get(url)
+    .then(results => {
+      let data = results.body.results;
+      let movieList = data.map(movie => {
+        return new Movie(movie)
+      })
+      response.status(200).send(movieList)
+    })
+    .catch(err => {
+      console.log(err)
+      response.status(500).send(err.message)
+    })
+}
+
+function Movie(obj) {
+  this.title = obj.title;
+  this.overview = obj.overview;
+  this.average_votes = obj.vote_average;
+  this.total_votes = obj.vote_count;
+  this.image_url = obj.poster_path ? `https://image.tmdb.org/t/p/w500/${obj.poster_path}` : "No Movie Poster Found 🤯";
+  this.popularity = obj.popularity;
+  this.released_on = obj.release_date;
+};
 
 app.use('*', (request, response) => response.status(404).send('Route Not Found'))
 
