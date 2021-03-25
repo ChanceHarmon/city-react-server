@@ -61,7 +61,7 @@ function Movie(obj) {
   this.overview = obj.overview;
   this.average_votes = obj.vote_average;
   this.total_votes = obj.vote_count;
-  this.image_url = obj.poster_path ? `https://image.tmdb.org/t/p/w500/${obj.poster_path}` : "No Movie Poster Found 🤯";
+  this.image_url = obj.poster_path ? `https://image.tmdb.org/t/p/w500/${obj.poster_path}` : 'https://www.stevensegallery.com/640/360';
   this.popularity = obj.popularity;
   this.released_on = obj.release_date;
 };
